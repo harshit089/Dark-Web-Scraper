@@ -1,9 +1,6 @@
 from requests_tor import RequestsTor
 from bs4 import BeautifulSoup
 import random
-from dotenv import dotenv_values
-
-config = dotenv_values(".env") 
 
 USERAGENT_LIST = [
         'Mozilla/5.0 (Windows NT 6.2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1464.0 Safari/537.36',
@@ -30,68 +27,38 @@ USERAGENT_LIST = [
 
 rt = RequestsTor(tor_ports=(9050,9052,9054,9056,9058,9060), tor_cport=9051,autochange_id=2)
 
-dkforest_url = 'http://dkforestseeaaq2dqz2uflmlsybvnq2irzn4ygyvu53oazyorednviid.onion'
-usernames_dk = ["singlemomof1","singlemomof2","singlemomof3","singlemomof4","singlemomof5"]
-headers_dk = {
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
-                'Accept-Language': 'en-GB,en;q=0.9',
-                'Cache-Control': 'max-age=0',
-                'Connection': 'keep-alive',
-                'Origin': 'http://dkforestseeaaq2dqz2uflmlsybvnq2irzn4ygyvu53oazyorednviid.onion',
-                'Referer': 'http://dkforestseeaaq2dqz2uflmlsybvnq2irzn4ygyvu53oazyorednviid.onion/',
-                'Sec-GPC': '1',
-                'Upgrade-Insecure-Requests': '1',
-                'User-Agent': random.choice(USERAGENT_LIST)
-        }
+hidden_answr = "http://lp2fkbyfmiefvscyawqvssyh7rnwfjsifdhebp5me5xizte3s47yusqd.onion/"
 
-def prepare_dk_users(usernames_dk):
-    dk_users = []
-    passwd_dk = config['DKFOREST_PASSWORD']
+headers = {
+    'Host': 'lp2fkbyfmiefvscyawqvssyh7rnwfjsifdhebp5me5xizte3s47yusqd.onion',
+    'User-Agent': random.choice(USERAGENT_LIST),
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+    'Accept-Language': 'en-US,en;q=0.5',
+    'Accept-Encoding': 'gzip, deflate, br',
+    'Connection': 'keep-alive',
+    'Upgrade-Insecure-Requests': '1',
+    'Sec-Fetch-Dest': 'document',
+    'Sec-Fetch-User': '?1',
+    'Sec-Fetch-Mode': 'navigate',
+    'Sec-Fetch-Site': 'none',
+    'Sec-Fetch-User': '?1'
+}
 
-    for user in usernames_dk:
-        beginpage_dk = rt.get(dkforest_url)
-        soup = BeautifulSoup(beginpage_dk.content, "html.parser")
-        csrfToken_dk = soup.findAll(attrs={'name':'csrf'})[0]['value']
-
-        login_data_dk = {
-            'csrf': csrfToken_dk,
-            'username': user,
-            'password': passwd_dk,
-            'session_duration':"2592000"
-        }
-        login_cookie_dk ={
-            "_csrf":csrfToken_dk
-        }
-
-        
-
-        loginpage_dk = rt.post(dkforest_url, data=login_data_dk, cookies=login_cookie_dk, headers=headers_dk)
-        auth_token_dk = loginpage_dk.request.headers['Cookie'].split('=')[2]
-
-        dk_users.append({
-            'username':user,
-            "_csrf":csrfToken_dk,
-            "auth-token":auth_token_dk
-        })
-        print(f"User {user} prepared")
-    
-    return dk_users
-
-dk_user_list = prepare_dk_users(usernames_dk)
-
-# print(dk_user_list)
-
-# use a random entry from dk_user_list to scrape data from the page 
-
-# example
-# user = random.choice(dk_user_list)
-# webpage_cookie_dk = {
-#     "_csrf":user['_csrf'],
-#     "auth-token":user['auth-token']
-# }
-#
-# forum_page = rt.get(dkforest_url+"/forum", cookies=webpage_cookie_dk, headers=headers_dk)
-# print(forum_page.content)
+goodies = rt.get(hidden_answr, headers=headers)
+print(goodies.headers) # so i can get the cookies from here
+with open("hidden_answers.html", "w") as f:
+    f.write(goodies.text)
 
 
+# trying to go inside a post without cookie
+post_link = "http://lp2fkbyfmiefvscyawqvssyh7rnwfjsifdhebp5me5xizte3s47yusqd.onion/index.php/14469/anyone-got-vpn-recommendations"
+poster = rt.get(post_link,headers=headers)
+with open("post_hiddenanswer.html", "w") as f:
+    f.write(poster.text)
 
+
+# trying to go to next page in home
+hidden_answr_pg2 ="http://lp2fkbyfmiefvscyawqvssyh7rnwfjsifdhebp5me5xizte3s47yusqd.onion/index.php/questions?start=40"
+pg2 = rt.get(hidden_answr_pg2, headers=headers)
+with open("hidden_answers_pg2.html", "w") as f:
+    f.write(pg2.text)

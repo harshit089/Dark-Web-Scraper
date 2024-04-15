@@ -1,9 +1,6 @@
 from requests_tor import RequestsTor
 from bs4 import BeautifulSoup
 import random
-from dotenv import dotenv_values
-
-config = dotenv_values(".env") 
 
 USERAGENT_LIST = [
         'Mozilla/5.0 (Windows NT 6.2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1464.0 Safari/537.36',
@@ -30,68 +27,32 @@ USERAGENT_LIST = [
 
 rt = RequestsTor(tor_ports=(9050,9052,9054,9056,9058,9060), tor_cport=9051,autochange_id=2)
 
-dkforest_url = 'http://dkforestseeaaq2dqz2uflmlsybvnq2irzn4ygyvu53oazyorednviid.onion'
-usernames_dk = ["singlemomof1","singlemomof2","singlemomof3","singlemomof4","singlemomof5"]
-headers_dk = {
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
-                'Accept-Language': 'en-GB,en;q=0.9',
-                'Cache-Control': 'max-age=0',
-                'Connection': 'keep-alive',
-                'Origin': 'http://dkforestseeaaq2dqz2uflmlsybvnq2irzn4ygyvu53oazyorednviid.onion',
-                'Referer': 'http://dkforestseeaaq2dqz2uflmlsybvnq2irzn4ygyvu53oazyorednviid.onion/',
-                'Sec-GPC': '1',
-                'Upgrade-Insecure-Requests': '1',
-                'User-Agent': random.choice(USERAGENT_LIST)
-        }
+query_home = "http://ruc4i7xn5qu5uc7fu2sc34r6xl55xhgvxbcs56t4ayvbqo2fmp4pehqd.onion/"
 
-def prepare_dk_users(usernames_dk):
-    dk_users = []
-    passwd_dk = config['DKFOREST_PASSWORD']
+headers = {
+    'Host':'ruc4i7xn5qu5uc7fu2sc34r6xl55xhgvxbcs56t4ayvbqo2fmp4pehqd.onion',
+    'User-Agent': random.choice(USERAGENT_LIST),
+    'Accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+    'Accept-Language':'en-US,en;q=0.5',
+    'Accept-Encoding':'gzip, deflate, br',
+    'Connection':'keep-alive',
+    # 'Cookie':' PHPSESSID=2tp1s3llsegotpemn96efuad7l; sbjs_migrations=1418474375998%3D1; sbjs_current_add=fd%3D2024-04-15%2016%3A40%3A49%7C%7C%7Cep%3Dhttp%3A%2F%2Fruc4i7xn5qu5uc7fu2sc34r6xl55xhgvxbcs56t4ayvbqo2fmp4pehqd.onion%2F%7C%7C%7Crf%3D%28none%29; sbjs_first_add=fd%3D2024-04-15%2016%3A40%3A49%7C%7C%7Cep%3Dhttp%3A%2F%2Fruc4i7xn5qu5uc7fu2sc34r6xl55xhgvxbcs56t4ayvbqo2fmp4pehqd.onion%2F%7C%7C%7Crf%3D%28none%29; sbjs_current=typ%3Dtypein%7C%7C%7Csrc%3D%28direct%29%7C%7C%7Cmdm%3D%28none%29%7C%7C%7Ccmp%3D%28none%29%7C%7C%7Ccnt%3D%28none%29%7C%7C%7Ctrm%3D%28none%29%7C%7C%7Cid%3D%28none%29; sbjs_first=typ%3Dtypein%7C%7C%7Csrc%3D%28direct%29%7C%7C%7Cmdm%3D%28none%29%7C%7C%7Ccmp%3D%28none%29%7C%7C%7Ccnt%3D%28none%29%7C%7C%7Ctrm%3D%28none%29%7C%7C%7Cid%3D%28none%29; sbjs_udata=vst%3D2%7C%7C%7Cuip%3D%28none%29%7C%7C%7Cuag%3DMozilla%2F5.0%20%28Windows%20NT%2010.0%3B%20Win64%3B%20x64%3B%20rv%3A109.0%29%20Gecko%2F20100101%20Firefox%2F115.0; sbjs_session=pgs%3D12%7C%7C%7Ccpg%3Dhttp%3A%2F%2Fruc4i7xn5qu5uc7fu2sc34r6xl55xhgvxbcs56t4ayvbqo2fmp4pehqd.onion%2F; ia3rfv5poAi7NdHwpqa_meta_stats1358=wpqa_meta_stats; ia3rfv5poAi7NdHwpqa_meta_stats1105=wpqa_meta_stats; ia3rfv5poAi7NdHwpqa_meta_stats1214=wpqa_meta_stats; ia3rfv5poAi7NdHwpqa_meta_stats482=wpqa_meta_stats
+    'Upgrade-Insecure-Requests':'1',
+    'Sec-Fetch-Dest':'document',
+    'Sec-Fetch-Mode':'navigate',
+    'Sec-Fetch-Site':'cross-site'
+}
 
-    for user in usernames_dk:
-        beginpage_dk = rt.get(dkforest_url)
-        soup = BeautifulSoup(beginpage_dk.content, "html.parser")
-        csrfToken_dk = soup.findAll(attrs={'name':'csrf'})[0]['value']
+home = rt.get(query_home, headers=headers)
+with open("query_home.html", "w") as f:
+    f.write(home.text)
 
-        login_data_dk = {
-            'csrf': csrfToken_dk,
-            'username': user,
-            'password': passwd_dk,
-            'session_duration':"2592000"
-        }
-        login_cookie_dk ={
-            "_csrf":csrfToken_dk
-        }
+post_link ="http://ruc4i7xn5qu5uc7fu2sc34r6xl55xhgvxbcs56t4ayvbqo2fmp4pehqd.onion/question/send-usdt-almost-free-with-tron-energy-marketplace/"
+post = rt.get(post_link, headers=headers)
+with open("post_query.html", "w") as f:
+    f.write(post.text)
 
-        
-
-        loginpage_dk = rt.post(dkforest_url, data=login_data_dk, cookies=login_cookie_dk, headers=headers_dk)
-        auth_token_dk = loginpage_dk.request.headers['Cookie'].split('=')[2]
-
-        dk_users.append({
-            'username':user,
-            "_csrf":csrfToken_dk,
-            "auth-token":auth_token_dk
-        })
-        print(f"User {user} prepared")
-    
-    return dk_users
-
-dk_user_list = prepare_dk_users(usernames_dk)
-
-# print(dk_user_list)
-
-# use a random entry from dk_user_list to scrape data from the page 
-
-# example
-# user = random.choice(dk_user_list)
-# webpage_cookie_dk = {
-#     "_csrf":user['_csrf'],
-#     "auth-token":user['auth-token']
-# }
-#
-# forum_page = rt.get(dkforest_url+"/forum", cookies=webpage_cookie_dk, headers=headers_dk)
-# print(forum_page.content)
-
-
-
+next_page="http://ruc4i7xn5qu5uc7fu2sc34r6xl55xhgvxbcs56t4ayvbqo2fmp4pehqd.onion/page/2/"
+next = rt.get(next_page, headers=headers)
+with open("next_query.html", "w") as f:
+    f.write(next.text)
