@@ -2,18 +2,23 @@ from pymongo import MongoClient
 from dotenv import dotenv_values
 from requests_tor import RequestsTor
 from bs4 import BeautifulSoup
-from datetime import datetime,timedelta
+from datetime import datetime
 import random
 from texttable import Texttable
-import csv
+import time
+import threading
+import sys
 
 config = dotenv_values(".env") 
 
-client = MongoClient("mongodb+srv://littleBob:" + config["MONGODB_PASSWORD"] + "@cluster0.z3ehy3o.mongodb.net/")
-db = client["DarkWebDB"]
-post_headers = db["PostHeaders"]
-post_contents = db["PostContents"]
-print("Connected to MongoDB")
+try:
+    client = MongoClient("mongodb+srv://littleBob:" + config["MONGODB_PASSWORD"] + "@cluster0.z3ehy3o.mongodb.net/")
+    db = client["DarkWebDB"]
+    post_headers = db["PostHeaders"]
+    post_contents = db["PostContents"]
+except Exception as e:
+    print("Error connecting to MongoDB")
+    exit()
 
 USERAGENT_LIST = [
         'Mozilla/5.0 (Windows NT 6.2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1464.0 Safari/537.36',
@@ -114,7 +119,7 @@ def prepare_dk_users(usernames_dk):
             "_csrf":csrfToken_dk,
             "auth-token":auth_token_dk
         })
-        print(f"User {user} prepared")
+        # print(f"User {user} prepared")
     
     return dk_users
 
@@ -204,7 +209,7 @@ def parser_hidden_ans_home(string):
 
 
 def parser_hidden_answer_post(string,post_link):
-    print(post_link)
+    # print(post_link)
     soup = BeautifulSoup(string, 'html.parser')
     namej, msgj, timej = ([] for _ in range(3))
 
@@ -239,7 +244,7 @@ def parser_hidden_answer_post(string,post_link):
     return data
 
 def parser_darkfor_post(string,link):
-    print(link) 
+    # print(link) 
     soup = BeautifulSoup(string, 'html.parser')
     namej, datej, msgj = ([] for _ in range(3))
 
@@ -276,6 +281,8 @@ def parser_darkfor_post(string,link):
 
 
 def full_crawler():
+    print("Crawling...")
+    sys.stdout.flush()
     dk_users = prepare_dk_users(usernames_dk)
     # get data from darkforest,random user
     user = random.choice(dk_users)
@@ -291,7 +298,8 @@ def full_crawler():
     try:
         post_headers.insert_many(darkfor_home_data)
     except Exception as e:
-        print(e)
+        # print(e)
+        pass
 
     #use the links in the data received to generate post links
     for entry in darkfor_home_data:
@@ -302,14 +310,15 @@ def full_crawler():
         try:
             post_contents.insert_many(post_data)
         except Exception as e:
-            print(e)
+            # print(e)
+            pass
         
     #use all the post links to get the post data,put to parser and store in mongodb
 
     #repeat for hidden answers
     hidden_ans_np ="http://lp2fkbyfmiefvscyawqvssyh7rnwfjsifdhebp5me5xizte3s47yusqd.onion/index.php/questions?start="
     for i in range(94):
-        print(i)
+        # print(i)
         hidden_answr_tmp = hidden_ans_np + str(i*20)
         hidden_answr_home = rt.get(hidden_answr_tmp, headers=headers_hiddenans)
         hidden_answr_home_data = parser_hidden_ans_home(hidden_answr_home.text)
@@ -317,7 +326,9 @@ def full_crawler():
         try:
             post_headers.insert_many(hidden_answr_home_data)
         except Exception as e:
-            print(e)
+            # print(e)
+            pass
+
 
         for entry in hidden_answr_home_data:
             post_link = entry["link"]
@@ -326,7 +337,8 @@ def full_crawler():
             try:
                 post_contents.insert_many(post_data)
             except Exception as e:
-                print(e)
+                # print(e)
+                pass
 
 # full_crawler()
 
@@ -379,28 +391,28 @@ def SearchBar(search_option):
     ff_temp=[]
     for result in results:
         t.add_row([result["site"], result["msg"], result["link"], result["username"], result["date&time"].strftime("%Y-%m-%d %H:%M:%S")])
-        # ff_temp.append([result["site"], result["msg"], result["link"], result["username"], result["date&time"].strftime("%Y-%m-%d %H:%M:%S")])
-        # print(result)
     print(t.draw())
-    # print(ff_temp)
 
     # # ask for file output
-    # file_output = input("Do you want to save the results in a file? (y/n): ")
-    # if file_output == 'y':
-    #     filename = input("Enter the filename (including extension): ") or "data.csv"
-    #     with open(filename, 'w') as file:
-    #         writer = csv.writer(file,delimiter=',')
-    #         writer.writerow(["site", "msg", "link", "username", "date&time"])
-    #         file.flush()
-    #         for result in ff_temp:
-    #             print(11)
-    #             # resultrow = [result["site"], result["msg"], result["link"], result["username"], result["date&time"]]
-    #             writer.writerow(result)
-    #             file.flush()
-    #     print("File saved as", filename)
-    # else:
-    #     print("Results not saved in a file")
+    file_output = input("Do you want to save the results in a file? (y/n): ")
+    if file_output == 'y':
+        filename = input("Enter the filename (default data.txt): ") or "data.txt"
+        with open(filename, 'w') as file:
+            file.write(t.draw())
+        print("File saved as", filename)
+    else:
+        print("Results not saved in a file")
 
+def background_crawler():
+    while True:
+        try:
+            full_crawler()
+        except Exception as e:
+            print("Network issue, retrying in 24 hours...")
+        time.sleep(24 * 60 * 60)
+
+crawler_thread = threading.Thread(target=background_crawler, daemon=True)
+crawler_thread.start()
 
 SearchBarIntro()
 while True:
@@ -408,4 +420,8 @@ while True:
     search_option = search_option.lower()
     if(search_option=='q'):
         break
-    SearchBar(search_option)
+    try:
+        SearchBar(search_option)
+    except Exception as e:
+        print("Error in searching")
+        continue
