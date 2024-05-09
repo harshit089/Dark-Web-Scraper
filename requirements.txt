@@ -1,0 +1,5 @@
+pymongo
+python-dotenv
+requests-tor
+beautifulsoup4
+texttable
