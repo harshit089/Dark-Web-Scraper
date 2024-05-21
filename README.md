@@ -65,3 +65,72 @@ To get a local copy up and running, follow these simple steps.
 1. Clone the repo
    ```sh
    git clone https://github.com/harshit089/Dark-Web-Scraper.git
+2. 🧅 and 🏃‍♂️
+
+      *Test if tor is running by* ``` curl -p --socks5 127.0.0.1:9050 https://icanhazip.com```
+   
+   __Linux__ 
+
+   1. Install tor 
+      ```sh 
+      sudo apt install tor
+      ```
+   2. Run using the torrc file in the project
+      ```sh
+      tor -f sample_torrc
+      ```
+   3. Create venv
+      ```sh
+      pip install virtualenv
+      python3 -m venv venv
+      source venv/bin/activate
+      pip install -r requirements.txt
+      ```
+   4. Add .env file to project directory
+   5. Run
+      ```sh 
+         python3 mainv2.py
+      ```
+
+   __Windows__
+   1. Install [Tor](https://www.torproject.org/download/). Note the directory in which it gets installed.
+   2. Add the folder Location-where-you-have-Tor-Installed\Tor Browser\Browser\TorBrowser\Tor to PATH. This folder should contain the tor.exe file
+   3. Run the command
+      ```sh
+      tor -f sample_torrc
+      ```
+   4. Create venv
+      ```sh 
+      pip install virtualenv
+      python -m venv venv
+      .\venv\Scripts\activate
+      pip install -r requirements.txt
+      ```
+   5. Add .env file to project directory
+   6. Run
+      ```sh 
+         python mainv2.py
+      ```
+
+   __Mac__
+   1. Install tor
+      ```sh 
+      brew install tor
+      ```
+   2. Run tor using the file torrc
+      ```sh 
+      tor -f sample_torrc
+      ```
+   3. Create venv
+      ```sh
+      python3 -m pip install virtualenv
+      python3 -m venv venv
+      source venv/bin/activate
+      pip install -r requirements.txt
+      ```
+   4. Add .env file to project directory
+   5. Run
+      ```sh 
+         python3 mainv2.py
+      ```
+

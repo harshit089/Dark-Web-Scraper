@@ -1,0 +1,8 @@
+SocksPort 9050 
+SocksPort 9052
+SocksPort 9054
+SocksPort 9056
+SocksPort 9058
+SocksPort 9060
+ControlPort 9051
+CookieAuthentication 0

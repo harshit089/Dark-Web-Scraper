@@ -17,7 +17,7 @@ try:
     post_headers = db["PostHeaders"]
     post_contents = db["PostContents"]
 except Exception as e:
-    print("Error connecting to MongoDB")
+    print("Error connecting to MongoDB. Please check the connection and try again.")
     exit()
 
 USERAGENT_LIST = [
