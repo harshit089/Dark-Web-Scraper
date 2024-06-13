@@ -71,7 +71,7 @@ To get a local copy up and running, follow these simple steps.
    
    __Linux__ 
 
-   1. Install tor 
+   1. Install [Tor](https://www.torproject.org/download/).
       ```sh 
       sudo apt install tor
       ```
@@ -113,7 +113,7 @@ To get a local copy up and running, follow these simple steps.
       ```
 
    __Mac__
-   1. Install tor
+   1. Install [Tor](https://www.torproject.org/download/).
       ```sh 
       brew install tor
       ```
