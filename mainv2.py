@@ -17,6 +17,7 @@ try:
     post_headers = db["PostHeaders"]
     post_contents = db["PostContents"]
 except Exception as e:
+    print(e)
     print("Error connecting to MongoDB. Please check the connection and try again.")
     exit()
 
@@ -386,6 +387,7 @@ def SearchBar(search_option):
 
 
     t = Texttable()
+    t.set_cols_width([9,50, 60,17,10])
 
     t.add_row([ "site", "msg", "link", "username", "date&time"])
     ff_temp=[]
